@@ -156,13 +156,10 @@ Models were validated using an isolated 15% Validation partition to maintain tot
 | K-Nearest Neighbors (Tuned) | 0.672956 | 0.734694 | 0.734694 | 0.734694 |
 
 ### 5.3 Visual Model Performance Insights
-![Confusion Matrix Heatmap](output/confusion_matrix.png)
-![Feature Importance Chart](output/feature_importance.png)
-
-#### Diagnostic Analysis of Visual Findings
 
 ### 1. Confusion Matrix Interpretation (How the Model Decides)
 The confusion matrix evaluates how well our Random Forest champion model handles true boundaries versus misclassifications on the out-of-sample Test Set ($N=159$ total users):
+![Confusion Matrix Heatmap](output/confusion_matrix.png)
 * **True Positives (89 Users Caught Churning):** The model demonstrates incredibly robust coverage on the active attrition class, successfully catching 89 out of the 98 total actual churners. This directly validates our choice to optimize for the **F1-Score**, as it forced the ensemble trees to favor high sensitivity on the critical churn class.
 * **False Negatives (9 Missed Churners):** These represent the most hazardous pipeline errors—athletes who abandon the platform completely unnoticed by the system. Our model successfully minimized this quadrant down to just 9 users, giving the company an exceptional 90.8% Recall rate on actual attrition.
 * **False Positives (35 Wasted Alerts):** The model misclassified 35 healthy users as "at risk." In a live digital health ecosystem, the operational cost of a False Positive is remarkably low. It simply means an active user receives an automated motivational push notification or a premium feature promotion—actions that frequently enhance product engagement rather than damage it.
@@ -170,6 +167,7 @@ The confusion matrix evaluates how well our Random Forest champion model handles
 
 ### 2. Feature Importance Interpretation (What Drives Retention?)
 The Random Forest ensemble calculates feature importance by measuring the mean decrease in impurity (Gini importance) whenever a specific metric is chosen to split a node. The rankings reveal critical behavioral insights:
+![Feature Importance Chart](output/feature_importance.png)
 * **The Dominance of Volume & Consistency:** Features reflecting behavioral momentum—specifically `total_workouts` and `total_active_minutes`—command nearly half of the model's total predictive weight. If an athlete's historical logging frequency drops below their calculated baseline threshold, it triggers an immediate branch split toward a Churn prediction. 
 * **Physiological Markers vs. Spatial Anchors:** Cardiovascular consistency (`overall_avg_hr`) and workout lengths (`avg_workout_duration`) act as secondary structural stabilizers in deeper tree layers, fine-tuning the probability profiles of active users. Meanwhile, geographic metrics (`home_lat`, `home_lon`) provide subtle regional baseline clusters.
 * **The Irrelevance of Diversification:** Strikingly, `sport_diversity` rests at the absolute bottom of feature significance. This proves that **habitual consistency beats variety** within digital health communities. To prevent churn, product managers should focus on keeping users consistently engaged in their primary activity rather than trying to cross-train them into new sport categories.
