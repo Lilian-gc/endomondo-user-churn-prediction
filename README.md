@@ -155,11 +155,11 @@ Models were validated using an isolated 15% Validation partition to maintain tot
 | Logistic Regression (Tuned) | 0.666667 | 0.702703 | 0.795918 | 0.746411 |
 | K-Nearest Neighbors (Tuned) | 0.672956 | 0.734694 | 0.734694 | 0.734694 |
 
-### Visual Model Performance Insights
+### 5.3 Visual Model Performance Insights
 ![Confusion Matrix Heatmap](output/confusion_matrix.png)
 ![Feature Importance Chart](output/feature_importance.png)
 
-#### 5.3 Diagnostic Analysis of Visual Findings
+#### Diagnostic Analysis of Visual Findings
 
 ### 1. Confusion Matrix Interpretation (How the Model Decides)
 The confusion matrix evaluates how well our Random Forest champion model handles true boundaries versus misclassifications on the out-of-sample Test Set ($N=159$ total users):
