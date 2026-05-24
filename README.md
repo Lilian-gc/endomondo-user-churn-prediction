@@ -69,9 +69,3 @@ The project evaluates submissions using the **Unified F1-Score** and **Classific
 * `matplotlib` & `seaborn` (Visual performance matrices & bar charts)
 * `xgboost` (Advanced gradient tree boosting)
 
-## ▶️ Quick Start
-
-**Clone & explore the workspace:**
-```bash
-git clone [https://github.com/](https://github.com/)[Your-GitHub-Username]/[Your-Repo-Name].git
-cd [Your-Repo-Name]
