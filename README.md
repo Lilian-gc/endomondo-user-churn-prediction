@@ -1,11 +1,20 @@
-# 🏃‍♂️Predict User Churn on Digital Health Platforms
+# 🏃‍♂️ Predictive Analytics for User Churn Mitigation in Digital Health Platforms
 
-Capstone Project - Professional Certificate in Data Analytics (Imperial College Business School)
-Author: Lilian Gomez
-🚀 Live Project Site: [Link to your GitHub repository or pages]
+**Capstone Project - Professional Certificate in Data Analytics** **Imperial College Business School** **Author:** Lilian Gomez 
 
-## 🧠 Problem Statement
-Given physical workout logs and user metadata from the Endomondo ecosystem (behavioral, biological & spatial attributes), predict whether a platform user will abandon the app (**Churn** = 1) or remain actively retained (**Retained** = 0). 
+---
+
+## 1. EXECUTIVE SUMMARY
+This project addresses user attrition within digital health networks by developing an end-to-end machine learning pipeline using historical workout telemetry from the Endomondo ecosystem. Raw tracking data containing nested sensor logs was audited, cleaned, and aggregated into a static user-habit feature matrix. 
+
+Six distinct predictive architectures were optimized using an isolated validation loop. A Tuned Random Forest Classifier emerged as the champion production model, achieving a final classification Accuracy of **72.0%** and a Churn F1-Score of **80.0%** on a locked, unseen test dataset. This framework allows platforms to proactively flag at-risk accounts and deploy automated retention strategies before users abandon the platform.
+
+---
+
+## 2. INTRODUCTION
+In competitive digital health and fitness software markets, customer churn directly undermines recurring subscription revenue and increases Customer Acquisition Costs (CAC). Legacy retention efforts are often reactive, triggering coupons only after an account becomes completely inactive. 
+
+This project aims to convert raw wearable tracking telemetry—such as workout frequencies, duration, and cardiovascular markers—into early behavioral warning indicators. By deploying automated predictive classification, operational teams can dynamically flag accounts experiencing an unannounced decay in workout momentum, shifting the business from a reactive stance to a proactive, automated retention pipeline.
 
 Accurate, predictive classifications allow digital health networks to:
 * Deploy automated push notifications and adaptive training milestones.
@@ -14,6 +23,9 @@ Accurate, predictive classifications allow digital health networks to:
 
 The project evaluates submissions using the **Unified F1-Score** and **Classification Accuracy** to safely navigate background class imbalances.
 
+---
+
+## 3. METHODOLOGY
 ## 📂 Dataset
 
 The raw data utilized in this project is an engineered subset derived from the public Kaggle repository: [Endomondo Fitness Trajectories](https://www.kaggle.com/datasets/pypiahmad/endomondo-fitness-trajectories). 
