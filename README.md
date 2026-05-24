@@ -99,36 +99,49 @@ $$\text{Accuracy} = \frac{\text{TP} + \text{TN}}{\text{TP} + \text{TN} + \text{F
 ### Hyperparameter Tuning Configuration
 To systematically maximize the out-of-sample Churn F1-Score while fiercely guarding against overfitting, automated hyperparameter optimization was executed using `GridSearchCV`. A 3-fold stratified cross-validation loop (`cv=3`) was applied directly to the training partition, ensuring the validation and test sets remained completely isolated from parameter selection.
 
-The hyperparameter search spaces chosen for each architecture are detailed below:
+The hyperparameter search spaces chosen for each architecture, along with the mathematically optimal configurations discovered by `GridSearchCV`, are detailed below:
 
 #### 1. Dummy Baseline (`DummyClassifier`)
 * **Strategy Used:** `most_frequent`
 * **Mechanics:** This serves as a non-parametric baseline model. It computes no mathematical optimization boundaries; instead, it blindly predicts the majority class (Churned) for every user record. This anchors the absolute performance floor to prove if the actual machine learning models are extracting genuine predictive patterns.
+* **🏆 Selected Best Parameters:** *Non-parametric baseline (No tuning required).*
 
 #### 2. Logistic Regression (`LogisticRegression`)
-* **Regularization Strength (`C`):** Evaluated `[0.01, 0.1, 1, 10]`. The parameter $C$ represents the inverse of regularization strength ($C = \frac{1}{\lambda}$). Smaller values (like `0.01`) impose a brutal penalty on coefficient sizes to prevent over-reliance on any single metric, whereas larger values allow the model to fit more closely to the training points.
+* **Regularization Strength (`C`):** Evaluated `[0.01, 0.1, 1, 10]`. The parameter $C$ represents the inverse of regularization strength ($C = \frac{1}{\lambda}$). Smaller values impose a brutal penalty on coefficient sizes to prevent over-reliance on any single metric, whereas larger values allow the model to fit more closely to the training points.
 * **Optimization Solver (`solver`):** Evaluated `['lbfgs', 'liblinear']`. Different optimization algorithms traverse the log-loss cost function gradient differently. `liblinear` is ideal for smaller datasets, while `lbfgs` handles multi-variable lines with great convergence stability.
+* **🏆 Selected Best Parameters:** `{'C': 1, 'solver': 'liblinear'}`
+  * *Insight:* A moderate penalty ($C=1$) combined with the coordinate descent approach of `liblinear` yielded the cleanest linear separation boundary without over-scaling feature coefficients.
 
 #### 3. K-Nearest Neighbors (`KNeighborsClassifier`)
-* **Neighborhood Volume (`n_neighbors`):** Evaluated `[3, 5, 7, 9, 11]`. This controls the localized geometric voting pool. A lower number (like `3`) creates highly complex, localized boundaries that risk memorizing data noise. A larger number (like `11`) smoothens out decision boundaries by averaging votes across larger geographical and behavioral clusters.
-* **Distance Weighting (`weights`):** Evaluated `['uniform', 'distance']`. `uniform` treats every neighboring athlete's vote equally. `distance` weights votes inversely to their distance from the query point, allowing users with highly identical physical characteristics to have a greater say in the classification.
+* **Neighborhood Volume (`n_neighbors`):** Evaluated `[3, 5, 7, 9, 11]`. This controls the localized geometric voting pool. A lower number creates highly complex, localized boundaries that risk memorizing data noise. A larger number smoothens out decision boundaries by averaging votes across larger behavioral clusters.
+* **Distance Weighting (`weights`):** Evaluated `['uniform', 'distance']`. `uniform` treats every neighboring athlete's vote equally. `distance` weights votes inversely to their distance from the query point.
+* **🏆 Selected Best Parameters:** `{'n_neighbors': 7, 'weights': 'uniform'}`
+  * *Insight:* A neighborhood threshold of $k=7$ successfully optimized the bias-variance trade-off, preventing the model from overreacting to single outlier points, while `uniform` voting indicates that raw cluster density is more predictive than distance proximity.
 
 #### 4. Support Vector Machine (`SVC`)
-* **Error Penalty Parameter (`C`):** Evaluated `[0.1, 1, 10]`. This acts as a soft-margin penalty regulator. It strictly dictates the mathematical trade-off between maximizing the geometric width of the decision margin and minimizing misclassification errors on training coordinates.
+* **Error Penalty Parameter (`C`):** Evaluated `[0.1, 1, 10]`. This acts as a soft-margin penalty regulator, strictly dictating the mathematical trade-off between maximizing the geometric width of the decision margin and minimizing misclassification errors on training coordinates.
 * **Kernel Space (`kernel`):** Evaluated `['linear', 'rbf']`. Testing a `linear` hyperplane versus a Radial Basis Function (`rbf`) kernel determines if user churn profiles can be separated by a flat linear cut, or if they require mapping into non-linear, higher-dimensional circular pockets.
+* **🏆 Selected Best Parameters:** `{'C': 0.1, 'kernel': 'rbf'}`
+  * *Insight:* The optimization loop heavily favored a non-linear `rbf` kernel to map complex, curved behavior profiles, pairing it with a high-regularization soft margin ($C=0.1$) to maximize margin width and guarantee generalization.
 
 #### 5. Decision Tree (`DecisionTreeClassifier`)
-* **Maximum Tree Depth (`max_depth`):** Evaluated `[None, 3, 5, 7]`. Setting this to `None` allows the tree to grow until every leaf is pure, which heavily causes overfitting. Setting hard caps like `3` or `5` cuts the tree off early, forcing it to look at macro-level user habits rather than outlier variations.
+* **Maximum Tree Depth (`max_depth`):** Evaluated `[None, 3, 5, 7]`. Setting this to `None` allows the tree to grow until every leaf is pure, which heavily causes overfitting. Setting hard caps cuts the tree off early, forcing it to look at macro-level user habits rather than outlier variations.
 * **Split Threshold (`min_samples_split`):** Evaluated `[2, 5, 10]`. This dictates how many unique user profiles must reside inside a node before the algorithm is allowed to split it further. Higher numbers prevent the tree from creating highly specific, hyper-isolated custom rules.
+* **🏆 Selected Best Parameters:** `{'max_depth': 3, 'min_samples_split': 2}`
+  * *Insight:* Limiting structural depth to a shallow 3 levels prevented the tree from breaking down into hyper-specific noise, creating a highly interpretable, robust series of baseline user-attrition splits.
 
 #### 6. Random Forest Classifier (`RandomForestClassifier`) - *Project Champion*
 * **Ensemble Size (`n_estimators`):** Evaluated `[50, 100, 200]`. This dictates how many de-correlated decision trees are built inside the forest. More estimators stabilize the variance of the overall system and yield smoother probability curves without risking overfitting.
 * **Maximum Depth Boundary (`max_depth`):** Evaluated `[None, 5, 10]`. Controls structural depth across the ensemble to restrict individual trees from over-allocating importance to high-frequency workout outliers.
+* **🏆 Selected Best Parameters:** `{'max_depth': 10, 'n_estimators': 50}`
+  * *Insight:* Allowing individual trees to reach a depth of 10 allowed the forest to thoroughly map complex interactions between biological features (like heart rates) and volume features (like total active minutes), while an ensemble of 50 trees provided excellent de-correlation to cement this architecture as our overall project champion.
 
 #### 7. XGBoost Classifier (`XGBClassifier`)
 * **Boosting Iterations (`n_estimators`):** Evaluated `[50, 100]`. Sets the definitive upper ceiling for the number of sequential gradient boosted rounds.
-* **Shrinkage Factor (`learning_rate`):** Evaluated `[0.01, 0.1, 0.2]`. Crucial for boosting pipelines. It scales down the step size of each new sequential tree, forcing subsequent trees to slowly correct the residual errors of prior models to prevent the gradient optimization from overshooting the global minimum.
+* **Shrinkage Factor (`learning_rate`):** Evaluated `[0.01, 0.1, 0.2]`. Crucial for boosting pipelines, it scales down the step size of each new sequential tree, forcing subsequent trees to slowly correct the residual errors of prior models to prevent the gradient optimization from overshooting the global minimum.
 * **Max Depth (`max_depth`):** Evaluated `[3, 5]`. Intentionally set to a shallow range. Boosting performs best when utilizing thin, shallow trees ("weak learners") that collectively combine into a robust predictor.
+* **🏆 Selected Best Parameters:** `{'learning_rate': 0.01, 'max_depth': 3, 'n_estimators': 50}`
+  * *Insight:* The model optimized perfectly around maximum regularization—forcing a highly conservative learning rate ($0.01$), flat shallow tree stumps ($\text{depth}=3$), and an early cutoff of 50 estimators to prevent the sequential boost function from over-fitting the training data.
 
 ### Model Performance Comparison
 Models were validated using an isolated 15% Validation partition to maintain total data insulation. The **Tuned Random Forest** dramatically outperformed simple linear baselines and distance clusters.
