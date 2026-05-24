@@ -24,8 +24,8 @@ The data architecture transitions through a structured, reproducible "Raw-to-Pro
 | :--- | :--- |
 | `data/raw/` | *Directory for initial, uncleaned sequential logging source data batches.* |
 | `data/raw/endomondoHR_proper.json` | *[Omitted due to GitHub file size limits; available locally]* The original source JSON containing nested high-frequency sensor telemetry (heart rate series, timestamps, and GPS coordinates). |
-| `data/raw/endomondo_summaries.csv` | Initial raw workout logging batch mapped sequentially. |
 | `notebooks/1.0_data_cleaning_and_audit.ipynb` | Pipeline auditing, handling missing sensor data, dropping corrupted features. **Transforming raw JSON into structured CSV.** |
+| `data/raw/endomondo_summaries.csv` | Initial raw workout logging batch mapped sequentially. |
 | `notebooks/2.0_user_feature_engineering.ipynb` | Compressing raw sequential time-series workout logs into static, unique user profiles. |
 | `notebooks/3.0_model_training_and_evaluation.ipynb` | 3-way data partitioning (Train/Validation/Test), hyperparameter grid tuning, and final unbiased performance evaluation. |
 | `data/processed/` | *Directory for finalized, modeling-ready datasets.* |
