@@ -164,10 +164,11 @@ Models were validated using an isolated 15% Validation partition to maintain tot
 #### 📝 Diagnostic Analysis of Visual Findings
 
 ### 1. Confusion Matrix Interpretation (How the Model Decides)
-The confusion matrix evaluates how well our Random Forest champion model handles true boundaries versus misclassifications on the out-of-sample Test Set:
-* **True Negatives (TN) & True Positives (TP):** The model demonstrates high robust coverage on the positive class (Churned), capturing the vast majority of users who are actually on the verge of abandoning the platform. This validates our choice to optimize for the **F1-Score**, as it forced the decision trees to prioritize identifying active attrition.
-* **False Positives (FP - Wasted Alerts):** A small quadrant of active users are misclassified as "at risk." In a live health platform deployment, the cost of a False Positive is minimal—it simply means an active athlete receives an extra motivational push notification or a feature showcase email, which can actually boost engagement rather than harm it.
-* **False Negatives (FN - Missed Churners):** These represent the most hazardous platform errors—users who churn completely unnoticed. Our Tuned Random Forest successfully minimized this quadrant compared to the linear baselines, shifting the ecosystem from a blind, reactive state to a highly accurate proactive posture.
+The confusion matrix evaluates how well our Random Forest champion model handles true boundaries versus misclassifications on the out-of-sample Test Set ($N=159$ total users):
+* **True Positives (89 Users Caught Churning):** The model demonstrates incredibly robust coverage on the active attrition class, successfully catching 89 out of the 98 total actual churners. This directly validates our choice to optimize for the **F1-Score**, as it forced the ensemble trees to favor high sensitivity on the critical churn class.
+* **False Negatives (9 Missed Churners):** These represent the most hazardous pipeline errors—athletes who abandon the platform completely unnoticed by the system. Our model successfully minimized this quadrant down to just 9 users, giving the company an exceptional 90.8% Recall rate on actual attrition.
+* **False Positives (35 Wasted Alerts):** The model misclassified 35 healthy users as "at risk." In a live digital health ecosystem, the operational cost of a False Positive is remarkably low. It simply means an active user receives an automated motivational push notification or a premium feature promotion—actions that frequently enhance product engagement rather than damage it.
+* **True Negatives (26 Retained Users Authenticated):** The model correctly identifies 26 consistently stable, active profiles, preserving baseline security on users with deep-rooted athletic momentum.
 
 ### 2. Feature Importance Interpretation (What Drives Retention?)
 The Random Forest ensemble calculates feature importance by measuring the mean decrease in impurity (Gini importance) whenever a specific metric is chosen to split a node. The rankings reveal critical behavioral insights:
