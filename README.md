@@ -31,18 +31,20 @@ The data architecture transitions through a structured, reproducible "Raw-to-Pro
 
 ## 🔍 Approach Overview
 
-1. **Exploration & Profiling:** Investigated data missingness, target class balance (~61.7% churn vs 38.3% retained), and feature cardinality.
-2. **Feature Handling:**
-   * Audited and dropped the `avg_speed` column entirely due to massive satellite tracking gaps.
-   * Executed median imputation across remaining continuous biological and temporal attributes.
-   * Compiled user historical logs into 7 engineered summary features (`total_workouts`, `total_active_minutes`, `avg_workout_duration`, `overall_avg_hr`, `sport_diversity`, `home_lat`, `home_lon`).
-3. **Data Partitioning (3-Way Split):** Enforced a strict 70% Train / 15% Validation / 15% Test stratified partition split to establish complete data isolation and eliminate leakage.
-4. **Baseline Anchor:** Deployed a structural Dummy Classifier (predicting the majority class) to anchor prediction floors.
-5. **Models Evaluated & Tuned:**
-   * Logistic Regression, K-Nearest Neighbors, Support Vector Machine, Decision Tree, Random Forest, and XGBoost.
-   * Automated hyperparameter optimization executed via `GridSearchCV` on the validation split.
-6. **Model Selection:** The **Tuned Random Forest Classifier** achieved the optimal balance of Precision and Recall on the validation data.
-7. **Final Exam:** Evaluated the fully optimized Random Forest champion against the locked, untouched Test Set.
+1. **Temporal Boundary Selection:** Determined the definitive baseline end-date of the tracking window to be **December 31, 2015**. Analysis of the raw sequence timeline revealed that workouts logged after this threshold were sparse, non-representative statistical outliers. Restricting the boundary to this date preserves target distribution stability.
+2. **Dynamic Churn Definition:** Constructed a quantitative, rule-based classification framework to establish ground-truth labels. A user was officially defined as **Churned** ($y=1$) if they registered zero (0) workout activity entries within the **45-day window** preceding the dataset's December 31, 2015 endpoint. Users who maintained logging activity within this final 45-day bracket were categorized as **Retained** ($y=0$).
+3. **Exploration & Profiling:** Investigated post-labeling data missingness, feature cardinality, and observed a natural background class distribution consisting of ~61.7% churned profiles vs. 38.3% retained athletes.
+4. **Feature Engineering & Handling:**
+   * Audited and dropped the `avg_speed` column entirely due to systematic GPS satellite tracking handshaking gaps during indoor training.
+   * Applied localized median imputation across continuous biological and temporal attributes to resolve sparsity without shifting underlying feature distributions.
+   * Compressed granular, sequential raw workout histories into a unique cross-sectional user matrix consisting of 7 consolidated habit metrics (`total_workouts`, `total_active_minutes`, `avg_workout_duration`, `overall_avg_hr`, `sport_diversity`, `home_lat`, `home_lon`).
+5. **Rigorous Data Partitioning:** Enforced a strict **3-Way Stratified Partition Split (70% Train / 15% Validation / 15% Test)**. This establishes an un-breachable data insulation wall between training operations and validation adjustments, completely eliminating data leakage risks.
+6. **Baseline Anchor Establishment:** Implemented a structural Baseline Dummy Classifier (predicting the majority class) to benchmark a performance floor.
+7. **Algorithmic Evaluation & Hyperparameter Tuning:**
+   * Constructed and evaluated a diverse suite of architectures: Logistic Regression, K-Nearest Neighbors (KNN), Support Vector Machines (SVM), Decision Trees, Random Forests, and Gradient Boosted Trees (XGBoost).
+   * Executed automated hyperparameter optimization using `GridSearchCV` driven strictly by performance metrics calculated over the isolated validation partition split.
+8. **Champion Model Selection:** Crowned the **Tuned Random Forest Classifier** as the optimal operational framework due to its superior capacity to maximize the F1-Score (balancing Precision and Recall seamlessly).
+9. **Final Unbiased Exam:** Evaluated the fully configured Random Forest champion model against the locked, untouched Test Set to verify real-world predictive generalization.
 
 ## 📊 Key Insights
 
