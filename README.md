@@ -46,6 +46,42 @@ The data architecture transitions through a structured, reproducible "Raw-to-Pro
 8. **Champion Model Selection:** Crowned the **Tuned Random Forest Classifier** as the optimal operational framework due to its superior capacity to maximize the F1-Score (balancing Precision and Recall seamlessly).
 9. **Final Unbiased Exam:** Evaluated the fully configured Random Forest champion model against the locked, untouched Test Set to verify real-world predictive generalization.
 
+## 📐 Target & Metrics Framework
+
+### 🎯 Target Variable Formulation
+Because this predictive pipeline is designed to intercept user attrition before it occurs, the operational challenge was framed as a **Binary Classification problem**. 
+
+Following the application of the December 31, 2015 temporal cutoff and the 45-day inactivity rule, the target label $y$ for any unique user $i$ is formulated deterministically as:
+
+$$\text{Target } (y_i) = 
+\begin{cases} 
+1, & \text{if User is CHURNED (0 workouts logged in the final 45 days)} \\
+0, & \text{if User is RETAINED }(\ge 1\text{ workout logged in the final 45 days)}
+\end{cases}$$
+
+### 📊 Evaluation Metrics
+The underlying user base exhibits a natural class imbalance (~61.7% Churn vs. 38.3% Retained). In imbalanced data structures, optimizing purely for *Accuracy* creates a hazardous "Accuracy Paradox," where a naive model can score highly by simply guessing the majority class while failing to identify actual at-risk users. 
+
+To navigate this, the primary optimization metric chosen for this project is the **Unified F1-Score**, supplemented by secondary checks on Precision, Recall, and Accuracy.
+
+#### 1. F1-Score (Primary Optimization Target)
+The F1-Score computes the harmonic mean of Precision and Recall, serving as a single, balanced metric to judge model performance on both classes simultaneously.
+$$F_1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}$$
+
+#### 2. Precision
+Quantifies the model's trustworthiness. Out of all athletes flagged by the pipeline as "at risk of churning," what percentage actually abandoned the app? High precision prevents the marketing team from wasting promotional resources on healthy, active users.
+$$\text{Precision} = \frac{\text{True Positives (TP)}}{\text{True Positives (TP)} + \text{False Positives (FP)}}$$
+
+#### 3. Recall (Sensitivity)
+Quantifies the pipeline's coverage. Out of all actual platform churners, what percentage did the model successfully intercept? High recall is financially vital because missing a churner (**False Negative**) costs significantly more than sending an extra push notification to an active user (**False Positive**).
+$$\text{Recall} = \frac{\text{True Positives (TP)}}{\text{True Positives (TP)} + \text{False Negatives (FN)}}$$
+
+#### 4. Classification Accuracy
+Measures the overall ratio of correct predictions across both the positive and negative classes out of the entire evaluation pool.
+$$\text{Accuracy} = \frac{\text{TP} + \text{TN}}{\text{TP} + \text{TN} + \text{FP} + \text{FN}}$$
+
+*Note: All metric evaluations reported on the leaderboard are derived strictly from cross-validating across the isolated 15% Validation partition, establishing an unbiased comparison baseline before final Test set deployment.*
+
 ## 📊 Key Insights
 
 * **Volume Over Variety:** Consistency completely dominates predictive importance. `total_workouts` and `total_active_minutes` provide the loudest signal (~45% predictive weight).
